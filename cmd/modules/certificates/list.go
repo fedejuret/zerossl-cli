@@ -5,12 +5,15 @@ package certificates
 
 import (
 	"fmt"
+	"log"
+	"time"
 
 	"github.com/fatih/color"
 	"github.com/fedejuret/zerossl-golang-cli/lib/api"
 	"github.com/fedejuret/zerossl-golang-cli/lib/api/structs/responses"
 	"github.com/rodaine/table"
 	"github.com/spf13/cobra"
+	"github.com/theckman/yacspin"
 )
 
 var listCmd = &cobra.Command{
@@ -19,24 +22,31 @@ var listCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		status, _ := cmd.Flags().GetString("status")
 		cname, _ := cmd.Flags().GetString("cname")
+		expiringDays, _ := cmd.Flags().GetInt("expiring-days")
 
 		queryParams := make(map[string]string)
 		queryParams["certificate_status"] = status
-		queryParams["search"] = cname
 
+		if len(cname) > 0 {
+			queryParams["search"] = cname
+		}
+
+		cfg := yacspin.Config{
+			Frequency:       800 * time.Millisecond,
+			CharSet:         yacspin.CharSets[35],
+			Suffix:          " Fetching certificates",
+			SuffixAutoColon: true,
+		}
+		spinner, _ := yacspin.New(cfg)
+
+		spinner.Start()
 		response := api.Get("/certificates", queryParams)
+		spinner.Stop()
 
 		certificates, err := responses.UnmarshalCertificates(response)
 
 		if err != nil {
 			fmt.Println(err.Error())
-			return
-		}
-
-		text := fmt.Sprintf("Certificates found: %d\n", certificates.TotalCount)
-		fmt.Println(text)
-
-		if certificates.TotalCount == 0 {
 			return
 		}
 
@@ -46,8 +56,36 @@ var listCmd = &cobra.Command{
 		tbl := table.New("ID", "Name", "Status", "Expiration")
 		tbl.WithHeaderFormatter(headerFmt).WithFirstColumnFormatter(columnFmt)
 
+		totalCerts := 0
+
 		for _, cert := range certificates.Results {
-			tbl.AddRow(cert.ID, cert.CommonName, cert.Status, cert.Expires)
+			mustPrint := true
+			if expiringDays != -1 {
+				certExpiration, err := time.Parse("2006-01-02 15:04:05", cert.Expires)
+
+				if err != nil {
+					log.Fatal(err)
+				}
+
+				expirationDate := time.Now().Add(time.Duration(expiringDays) * 24 * time.Hour)
+
+				if certExpiration.Before(expirationDate) == false {
+					mustPrint = false
+				}
+			}
+
+			if mustPrint {
+				totalCerts++
+				tbl.AddRow(cert.ID, cert.CommonName, cert.Status, cert.Expires)
+			}
+
+		}
+
+		text := fmt.Sprintf("Certificates found: %d\n", totalCerts)
+		fmt.Println(text)
+
+		if totalCerts == 0 {
+			return
 		}
 
 		tbl.Print()
@@ -57,6 +95,7 @@ var listCmd = &cobra.Command{
 func init() {
 	certificatesCmd.AddCommand(listCmd)
 
-	listCmd.Flags().StringP("status", "s", "issued", "Certificate status. Possible values: draft, pending_validation, issued, cancelled, revoked, expired")
+	listCmd.Flags().StringP("status", "s", "issued", "Certificate status. Possible values: draft, pending_validation, expiring_soon, issued, cancelled, revoked, expired")
 	listCmd.Flags().StringP("cname", "c", "", "Use this parameter to search for certificates having the given common name or SAN")
+	listCmd.Flags().Int("expiring-days", -1, "Get certificates that expire within the specified date")
 }
