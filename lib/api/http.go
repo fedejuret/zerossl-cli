@@ -3,7 +3,6 @@ package api
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -19,12 +18,14 @@ func Post(path string, content interface{}) []byte {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(string(buf))
+
 	request, err := http.NewRequest("POST", API_URI+path+"?access_key="+os.Getenv("ACCESS_KEY"), bytes.NewBuffer(buf))
 
 	if err != nil {
 		panic(err)
 	}
+
+	request.Header.Set("Content-Type", "application/json")
 
 	client := &http.Client{}
 
