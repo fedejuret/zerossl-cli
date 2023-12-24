@@ -11,6 +11,7 @@ import (
 	"github.com/fatih/color"
 	"github.com/fedejuret/zerossl-golang-cli/lib/api"
 	"github.com/fedejuret/zerossl-golang-cli/lib/api/structs/responses"
+	"github.com/fedejuret/zerossl-golang-cli/lib/utils"
 	"github.com/rodaine/table"
 	"github.com/spf13/cobra"
 	"github.com/theckman/yacspin"
@@ -60,8 +61,8 @@ var listCmd = &cobra.Command{
 
 		for _, cert := range certificates.Results {
 			mustPrint := true
+			certExpiration, err := time.Parse("2006-01-02 15:04:05", cert.Expires)
 			if expiringDays != -1 {
-				certExpiration, err := time.Parse("2006-01-02 15:04:05", cert.Expires)
 
 				if err != nil {
 					log.Fatal(err)
@@ -76,7 +77,7 @@ var listCmd = &cobra.Command{
 
 			if mustPrint {
 				totalCerts++
-				tbl.AddRow(cert.ID, cert.CommonName, cert.Status, cert.Expires)
+				tbl.AddRow(cert.ID, cert.CommonName, cert.Status, cert.Expires+" ("+utils.GetTimeAgo().Format(certExpiration)+")")
 			}
 
 		}

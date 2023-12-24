@@ -10,6 +10,7 @@ require (
 	github.com/mattn/go-runewidth v0.0.13 // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
 	github.com/rodaine/table v1.1.0 // indirect
+	github.com/xeonx/timeago v1.0.0-rc5 // indirect
 )
 
 require (
