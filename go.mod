@@ -5,6 +5,7 @@ go 1.21.5
 require github.com/manifoldco/promptui v0.9.0
 
 require (
+	github.com/common-nighthawk/go-figure v0.0.0-20210622060536-734e95fb86be // indirect
 	github.com/gookit/color v1.5.2 // indirect
 	github.com/huandu/xstrings v1.3.2 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
