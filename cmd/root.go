@@ -11,7 +11,7 @@ import (
 
 // rootCmd represents the base command when called without any subcommands
 var RootCmd = &cobra.Command{
-	Use:     "zerossl-golang-cli",
+	Use:     "zerossl-cli",
 	Short:   "ZeroSSL CLI is a tool to interact with the ZEROSSL API using CLI",
 	Aliases: []string{"zcli"},
 }

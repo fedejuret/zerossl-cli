@@ -19,7 +19,7 @@ func Post(path string, content interface{}) []byte {
 		log.Fatal(err)
 	}
 
-	request, err := http.NewRequest("POST", API_URI+path+"?access_key="+os.Getenv("ACCESS_KEY"), bytes.NewBuffer(buf))
+	request, err := http.NewRequest("POST", API_URI+path+"?access_key="+os.Getenv("ZEROSSL_API_KEY"), bytes.NewBuffer(buf))
 
 	if err != nil {
 		panic(err)
@@ -50,7 +50,7 @@ func Get(path string, query map[string]string) []byte {
 	}
 
 	q := u.Query()
-	q.Set("access_key", os.Getenv("ACCESS_KEY"))
+	q.Set("access_key", os.Getenv("ZEROSSL_API_KEY"))
 
 	for key, value := range query {
 		q.Set(key, value)
