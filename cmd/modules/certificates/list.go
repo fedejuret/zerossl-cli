@@ -14,7 +14,6 @@ import (
 	"github.com/fedejuret/zerossl-golang-cli/lib/utils"
 	"github.com/rodaine/table"
 	"github.com/spf13/cobra"
-	"github.com/theckman/yacspin"
 )
 
 var listCmd = &cobra.Command{
@@ -32,13 +31,7 @@ var listCmd = &cobra.Command{
 			queryParams["search"] = cname
 		}
 
-		cfg := yacspin.Config{
-			Frequency:       800 * time.Millisecond,
-			CharSet:         yacspin.CharSets[35],
-			Suffix:          " Fetching certificates",
-			SuffixAutoColon: true,
-		}
-		spinner, _ := yacspin.New(cfg)
+		spinner := utils.GetSpinner("Fetching certificates", "fgYellow")
 
 		spinner.Start()
 		response := api.Get("/certificates", queryParams)

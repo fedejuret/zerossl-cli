@@ -30,10 +30,10 @@ func GetTimeAgo() timeago.Config {
 
 func GetSpinner(suffix string, color string) *yacspin.Spinner {
 	cfg := yacspin.Config{
-		Frequency:       500 * time.Millisecond,
+		Frequency:       100 * time.Millisecond,
 		ColorAll:        false,
 		Colors:          []string{color},
-		CharSet:         yacspin.CharSets[35],
+		CharSet:         yacspin.CharSets[11],
 		Suffix:          " " + suffix,
 		SuffixAutoColon: true,
 	}
