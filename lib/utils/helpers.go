@@ -3,6 +3,7 @@ package utils
 import (
 	"time"
 
+	"github.com/theckman/yacspin"
 	"github.com/xeonx/timeago"
 )
 
@@ -25,4 +26,18 @@ func GetTimeAgo() timeago.Config {
 	}
 
 	return c
+}
+
+func GetSpinner(suffix string, color string) *yacspin.Spinner {
+	cfg := yacspin.Config{
+		Frequency:       100 * time.Millisecond,
+		ColorAll:        false,
+		Colors:          []string{color},
+		CharSet:         yacspin.CharSets[11],
+		Suffix:          " " + suffix,
+		SuffixAutoColon: true,
+	}
+	spinner, _ := yacspin.New(cfg)
+
+	return spinner
 }

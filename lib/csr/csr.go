@@ -8,6 +8,8 @@ import (
 	"crypto/x509/pkix"
 	"encoding/pem"
 	"fmt"
+	"log"
+	"os"
 )
 
 type Generate struct {
@@ -20,8 +22,17 @@ type Generate struct {
 }
 
 func (c *Generate) Create() ([]byte, error) {
-	// Generar una clave privada ECDSA
+
 	privateKey, err := ecdsa.GenerateKey(elliptic.P384(), rand.Reader)
+	x509Encoded, _ := x509.MarshalECPrivateKey(privateKey)
+	pemEncoded := pem.EncodeToMemory(&pem.Block{Type: "PRIVATE KEY", Bytes: x509Encoded})
+
+	err = os.WriteFile(os.Getenv("ZEROSSL_FOLDER")+"/"+c.CommonName+"/"+"private.key", pemEncoded, 0777)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	if err != nil {
 		fmt.Println("Error al generar la clave privada:", err)
 		return nil, err
@@ -36,19 +47,16 @@ func (c *Generate) Create() ([]byte, error) {
 		Country:            []string{c.Country},
 	}
 
-	// Crear la solicitud de firma del certificado (CSR)
 	csrTemplate := x509.CertificateRequest{
 		Subject:            subject,
 		SignatureAlgorithm: x509.ECDSAWithSHA256,
 	}
 
-	// Codificar la CSR
 	csrDER, err := x509.CreateCertificateRequest(rand.Reader, &csrTemplate, privateKey)
 	if err != nil {
 		fmt.Println("Error al crear la CSR:", err)
 		return nil, err
 	}
 
-	// Codificar la CSR en formato PEM
 	return pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE REQUEST", Bytes: csrDER}), nil
 }
