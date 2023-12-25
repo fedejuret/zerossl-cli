@@ -10,6 +10,7 @@ import (
 	"os"
 
 	"github.com/common-nighthawk/go-figure"
+	"github.com/fatih/color"
 	"github.com/fedejuret/zerossl-golang-cli/cmd"
 	_ "github.com/fedejuret/zerossl-golang-cli/cmd/modules/certificates"
 	"github.com/fedejuret/zerossl-golang-cli/lib/database"
@@ -33,6 +34,7 @@ func main() {
 
 	myFigure := figure.NewColorFigure("ZEROSSL CLI", "", "cyan", true)
 	myFigure.Print()
+	fmt.Println(color.YellowString(" By Federico Juretich <fedejuret@gmail.com>"))
 	fmt.Println()
 	fmt.Println()
 	fmt.Println()
