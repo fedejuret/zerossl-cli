@@ -17,7 +17,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// downloadCmd represents the download command
 var downloadCmd = &cobra.Command{
 	Use:   "download",
 	Short: "A brief description of your command",
@@ -77,14 +76,14 @@ var downloadCmd = &cobra.Command{
 			crt := responseJson["certificate.crt"]
 			bundle := responseJson["ca_bundle.crt"]
 
-			file, err := os.Create(certificate.CommonName + "/certificate.crt")
+			file, err := os.Create(os.Getenv("ZEROSSL_FOLDER") + "/" + certificate.CommonName + "/certificate.crt")
 			if err != nil {
 				log.Fatal(err)
 			}
 			file.WriteString(crt)
 			defer file.Close()
 
-			file, err = os.Create(certificate.CommonName + "/ca_bundle.crt")
+			file, err = os.Create(os.Getenv("ZEROSSL_FOLDER") + "/" + certificate.CommonName + "/ca_bundle.crt")
 			if err != nil {
 				log.Fatal(err)
 			}

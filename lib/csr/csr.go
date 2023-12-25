@@ -27,7 +27,7 @@ func (c *Generate) Create() ([]byte, error) {
 	x509Encoded, _ := x509.MarshalECPrivateKey(privateKey)
 	pemEncoded := pem.EncodeToMemory(&pem.Block{Type: "PRIVATE KEY", Bytes: x509Encoded})
 
-	err = os.WriteFile(c.CommonName+"/"+"private.key", pemEncoded, 0777)
+	err = os.WriteFile(os.Getenv("ZEROSSL_FOLDER")+"/"+c.CommonName+"/"+"private.key", pemEncoded, 0777)
 
 	if err != nil {
 		log.Fatal(err)

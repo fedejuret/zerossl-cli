@@ -3,13 +3,14 @@ package database
 import (
 	"database/sql"
 	"log"
+	"os"
 
 	_ "github.com/mattn/go-sqlite3"
 )
 
 func Database() (*sql.DB, error) {
 
-	db, err := sql.Open("sqlite3", "./database.db")
+	db, err := sql.Open("sqlite3", os.Getenv("ZEROSSL_FOLDER")+"/database.db")
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -33,8 +33,8 @@ var createCmd = &cobra.Command{
 
 		commonName, _ := utils.GetStringPromt("Which domain do you want to create a certificate for?")
 
-		if _, err := os.Stat("/" + commonName); errors.Is(err, os.ErrNotExist) {
-			err := os.Mkdir(commonName, 0777)
+		if _, err := os.Stat(os.Getenv("ZEROSSL_FOLDER") + "/" + commonName); errors.Is(err, os.ErrNotExist) {
+			err := os.Mkdir(os.Getenv("ZEROSSL_FOLDER")+"/"+commonName, 0700)
 
 			if err != nil {
 				fmt.Println("Error when try to create " + commonName + " folder: " + err.Error())
