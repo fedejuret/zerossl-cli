@@ -60,9 +60,9 @@ var createCmd = &cobra.Command{
 		var csrGenerateStruct csr.Generate
 
 		if csrPromtResponse == 1 {
-			organization, _ := utils.GetStringPromt("Organization: ")
-			organizationUnit, _ := utils.GetStringPromt("Organization unit: ")
-			country, _ := utils.GetStringPromt("Country in two digits. Example: [AR]: ")
+			organization, _ := utils.GetStringPromt("Organization")
+			organizationUnit, _ := utils.GetStringPromt("Organization unit")
+			country, _ := utils.GetStringPromt("Country in two digits. Example: [AR]")
 			state, _ := utils.GetStringPromt("State: ")
 			locality, _ := utils.GetStringPromt("Locality: ")
 
@@ -120,9 +120,9 @@ var createCmd = &cobra.Command{
 
 		validateMethod := -1
 
-		validateMethod, _, _ = utils.GetSelectPromt("How do you want to validate your domain?", []string{"Email verification", "File upload", "Add CNAME record to DNS"})
+		validateMethod, _, _ = utils.GetSelectPromt("How do you want to validate your domain?", []string{"File upload", "Add CNAME record to DNS"})
 
-		if validateMethod == 1 { // File upload
+		if validateMethod == 0 { // File upload
 
 			uploadFileUrl, err := certificate.GetFileValidationURLHTTPS()
 
@@ -152,7 +152,7 @@ var createCmd = &cobra.Command{
 
 			fmt.Println(color.YellowString("Almost done!"))
 			fmt.Println(color.CyanString("The file " + fileName + " was created that you must upload to the following path: " + uploadFileUrl))
-		} else if validateMethod == 2 {
+		} else if validateMethod == 1 {
 
 			cname, content, err := certificate.GetDNSValidation()
 
