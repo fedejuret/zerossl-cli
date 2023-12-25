@@ -9,6 +9,7 @@ import (
 	"log"
 	"reflect"
 
+	"github.com/Delta456/box-cli-maker/v2"
 	"github.com/fatih/color"
 	"github.com/fedejuret/zerossl-golang-cli/lib/api"
 	"github.com/fedejuret/zerossl-golang-cli/lib/api/structs/requests"
@@ -98,7 +99,8 @@ var revokeCmd = &cobra.Command{
 			})
 			spinner.Stop()
 
-			fmt.Println(color.GreenString("Certificate revoked successfully"))
+			Box := box.New(box.Config{Px: 10, Py: 2, Type: "Classic", Color: "Green", TitlePos: "Inside"})
+			Box.Print("Right!", "Certificate revoked successfully")
 		}
 	},
 }
