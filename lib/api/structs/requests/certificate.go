@@ -5,3 +5,8 @@ type CreateCertificationStructure struct {
 	Csr          string `json:"certificate_csr"`
 	ValidityDays uint16 `json:"certificate_validity_days"`
 }
+
+type VerifyDomainStructure struct {
+	ValidationMethod  string `json:"validation_method"`
+	VerificationEmail string `json:"verification_email"`
+}

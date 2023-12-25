@@ -10,18 +10,17 @@ import (
 	"os"
 	"path"
 	"strings"
-	"time"
 
 	"github.com/Delta456/box-cli-maker/v2"
 	"github.com/fatih/color"
 	"github.com/manifoldco/promptui"
 	"github.com/spf13/cobra"
-	"github.com/theckman/yacspin"
 
 	"github.com/fedejuret/zerossl-golang-cli/lib/api"
 	"github.com/fedejuret/zerossl-golang-cli/lib/api/structs/requests"
 	"github.com/fedejuret/zerossl-golang-cli/lib/csr"
 	"github.com/fedejuret/zerossl-golang-cli/lib/models"
+	certificate_service "github.com/fedejuret/zerossl-golang-cli/lib/services"
 	"github.com/fedejuret/zerossl-golang-cli/lib/utils"
 )
 
@@ -94,13 +93,7 @@ var createCmd = &cobra.Command{
 			ValidityDays: certificateTime,
 		}
 
-		cfg := yacspin.Config{
-			Frequency:       500 * time.Millisecond,
-			CharSet:         yacspin.CharSets[35],
-			Suffix:          " Creating certificate for " + commonName,
-			SuffixAutoColon: true,
-		}
-		spinner, _ := yacspin.New(cfg)
+		spinner := utils.GetSpinner("Creating certificate for "+commonName, "fgGreen")
 
 		spinner.Start()
 		response := api.Post("/certificates", createCertificateRequest)
@@ -116,9 +109,10 @@ var createCmd = &cobra.Command{
 		Box.Print("Right!", "Certificate for "+commonName+" has been created with ID: "+certificate.ID)
 
 		validationNow, _, _ := utils.GetSelectPromt("Want to valide domain now?", []string{"Yes", "No, later"})
+		validateMethod := -1
 
 		if validationNow == 0 {
-			validateMethod, _, _ := utils.GetSelectPromt("What method want to use", []string{"Email verification", "File upload", "Add CNAME record to DNS"})
+			validateMethod, _, _ = utils.GetSelectPromt("What method want to use", []string{"Email verification", "File upload", "Add CNAME record to DNS"})
 
 			if validateMethod == 1 { // File upload
 
@@ -130,8 +124,7 @@ var createCmd = &cobra.Command{
 
 				parsedURL, err := url.Parse(uploadFileUrl)
 				if err != nil {
-					fmt.Println("Error al parsear la URL:", err)
-					return
+					log.Fatal(err)
 				}
 
 				fileName := path.Base(parsedURL.Path)
@@ -151,12 +144,13 @@ var createCmd = &cobra.Command{
 
 				fmt.Println(color.YellowString("Almost done!"))
 				fmt.Println(color.CyanString("The file " + fileName + " was created that you must upload to the following path: " + uploadFileUrl))
-
 			}
 
 		} else {
 			fmt.Println(color.CyanString("Good choice, you can validate later"))
 		}
+
+		certificate_service.Store(certificate, int8(validateMethod))
 
 	},
 }
