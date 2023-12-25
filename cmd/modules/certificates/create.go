@@ -5,14 +5,23 @@ package certificates
 
 import (
 	"fmt"
+	"log"
+	"net/url"
+	"os"
+	"path"
+	"strings"
+	"time"
 
+	"github.com/Delta456/box-cli-maker/v2"
 	"github.com/fatih/color"
 	"github.com/manifoldco/promptui"
 	"github.com/spf13/cobra"
+	"github.com/theckman/yacspin"
 
 	"github.com/fedejuret/zerossl-golang-cli/lib/api"
 	"github.com/fedejuret/zerossl-golang-cli/lib/api/structs/requests"
 	"github.com/fedejuret/zerossl-golang-cli/lib/csr"
+	"github.com/fedejuret/zerossl-golang-cli/lib/models"
 	"github.com/fedejuret/zerossl-golang-cli/lib/utils"
 )
 
@@ -42,7 +51,6 @@ var createCmd = &cobra.Command{
 		var csrGenerateStruct csr.Generate
 
 		if csrPromtResponse == 0 {
-			// Ask for other CSR dat
 			organization, _ := utils.GetStringPromt("Organization: ")
 			organizationUnit, _ := utils.GetStringPromt("Organization unit: ")
 			country, _ := utils.GetStringPromt("Country in two digits. Example: [AR]: ")
@@ -86,22 +94,73 @@ var createCmd = &cobra.Command{
 			ValidityDays: certificateTime,
 		}
 
+		cfg := yacspin.Config{
+			Frequency:       500 * time.Millisecond,
+			CharSet:         yacspin.CharSets[35],
+			Suffix:          " Creating certificate for " + commonName,
+			SuffixAutoColon: true,
+		}
+		spinner, _ := yacspin.New(cfg)
+
+		spinner.Start()
 		response := api.Post("/certificates", createCertificateRequest)
-		fmt.Println(string(response))
+		spinner.Stop()
+
+		certificate, err := models.UnmarshalCertificate(response)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		Box := box.New(box.Config{Px: 10, Py: 2, Type: "Classic", Color: "Green", TitlePos: "Inside"})
+		Box.Print("Right!", "Certificate for "+commonName+" has been created with ID: "+certificate.ID)
+
+		validationNow, _, _ := utils.GetSelectPromt("Want to valide domain now?", []string{"Yes", "No, later"})
+
+		if validationNow == 0 {
+			validateMethod, _, _ := utils.GetSelectPromt("What method want to use", []string{"Email verification", "File upload", "Add CNAME record to DNS"})
+
+			if validateMethod == 1 { // File upload
+
+				uploadFileUrl, err := certificate.GetFileValidationURLHTTPS()
+
+				if err != nil {
+					log.Fatal(err)
+				}
+
+				parsedURL, err := url.Parse(uploadFileUrl)
+				if err != nil {
+					fmt.Println("Error al parsear la URL:", err)
+					return
+				}
+
+				fileName := path.Base(parsedURL.Path)
+				fileContent, err := certificate.GetFileValidationContent()
+
+				if err != nil {
+					log.Fatal(err)
+				}
+
+				fileData := strings.Join(fileContent, "")
+
+				err = os.WriteFile(fileName, []byte(fileData), 0664)
+
+				if err != nil {
+					log.Fatal(err)
+				}
+
+				fmt.Println(color.YellowString("Almost done!"))
+				fmt.Println(color.CyanString("The file " + fileName + " was created that you must upload to the following path: " + uploadFileUrl))
+
+			}
+
+		} else {
+			fmt.Println(color.CyanString("Good choice, you can validate later"))
+		}
 
 	},
 }
 
 func init() {
 	certificatesCmd.AddCommand(createCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// createCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// createCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
