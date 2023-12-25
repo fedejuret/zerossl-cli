@@ -40,6 +40,11 @@ var verifyCmd = &cobra.Command{
 					ValidationMethod:  "HTTP_CSR_HASH",
 					VerificationEmail: "",
 				}
+			} else if verificationMethod == 2 {
+				verificationRequest = requests.VerifyDomainStructure{
+					ValidationMethod:  "CNAME_CSR_HASH",
+					VerificationEmail: "",
+				}
 			}
 
 			response := api.Post("/certificates/"+certId+"/challenges", verificationRequest)

@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"reflect"
 
 	"github.com/Delta456/box-cli-maker/v2"
 	"github.com/fatih/color"
@@ -38,7 +39,8 @@ var cancelCmd = &cobra.Command{
 
 		success, successExists := responseJson["success"]
 		if successExists {
-			if success == 1 {
+
+			if reflect.TypeOf(success).Kind() == reflect.Float64 {
 				Box := box.New(box.Config{Px: 10, Py: 2, Type: "Classic", Color: "Green", TitlePos: "Inside"})
 				Box.Print("Right!", "Certificate cancelled successfully")
 			} else {

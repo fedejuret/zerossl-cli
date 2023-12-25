@@ -108,46 +108,56 @@ var createCmd = &cobra.Command{
 		Box := box.New(box.Config{Px: 10, Py: 2, Type: "Classic", Color: "Green", TitlePos: "Inside"})
 		Box.Print("Right!", "Certificate for "+commonName+" has been created with ID: "+certificate.ID)
 
-		validationNow, _, _ := utils.GetSelectPromt("Want to valide domain now?", []string{"Yes", "No, later"})
 		validateMethod := -1
 
-		if validationNow == 0 {
-			validateMethod, _, _ = utils.GetSelectPromt("What method want to use", []string{"Email verification", "File upload", "Add CNAME record to DNS"})
+		validateMethod, _, _ = utils.GetSelectPromt("How do you want to validate your domain?", []string{"Email verification", "File upload", "Add CNAME record to DNS"})
 
-			if validateMethod == 1 { // File upload
+		if validateMethod == 1 { // File upload
 
-				uploadFileUrl, err := certificate.GetFileValidationURLHTTPS()
+			uploadFileUrl, err := certificate.GetFileValidationURLHTTPS()
 
-				if err != nil {
-					log.Fatal(err)
-				}
-
-				parsedURL, err := url.Parse(uploadFileUrl)
-				if err != nil {
-					log.Fatal(err)
-				}
-
-				fileName := path.Base(parsedURL.Path)
-				fileContent, err := certificate.GetFileValidationContent()
-
-				if err != nil {
-					log.Fatal(err)
-				}
-
-				fileData := strings.Join(fileContent, "")
-
-				err = os.WriteFile(fileName, []byte(fileData), 0664)
-
-				if err != nil {
-					log.Fatal(err)
-				}
-
-				fmt.Println(color.YellowString("Almost done!"))
-				fmt.Println(color.CyanString("The file " + fileName + " was created that you must upload to the following path: " + uploadFileUrl))
+			if err != nil {
+				log.Fatal(err)
 			}
 
-		} else {
-			fmt.Println(color.CyanString("Good choice, you can validate later"))
+			parsedURL, err := url.Parse(uploadFileUrl)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			fileName := path.Base(parsedURL.Path)
+			fileContent, err := certificate.GetFileValidationContent()
+
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			fileData := strings.Join(fileContent, "")
+
+			err = os.WriteFile(fileName, []byte(fileData), 0664)
+
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			fmt.Println(color.YellowString("Almost done!"))
+			fmt.Println(color.CyanString("The file " + fileName + " was created that you must upload to the following path: " + uploadFileUrl))
+		} else if validateMethod == 2 {
+
+			cname, content, err := certificate.GetDNSValidation()
+
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			fmt.Println(color.YellowString("Almost done!"))
+			fmt.Println(color.CyanString("To continue you have to create the following records in your DNS"))
+
+			fmt.Println("")
+
+			fmt.Println(color.CyanString("Type: "), "CNAME")
+			fmt.Println(color.CyanString("Name: "), cname)
+			fmt.Println(color.CyanString("Content: "), content)
 		}
 
 		certificate_service.Store(certificate, int8(validateMethod))

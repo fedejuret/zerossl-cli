@@ -49,6 +49,25 @@ func (c *Certificate) GetFileValidationURLHTTPS() (string, error) {
 	return parsedURL, nil
 }
 
+func (c *Certificate) GetDNSValidation() (cname string, content string, err error) {
+	certData, ok := c.Validation.OtherMethods[c.CommonName].(map[string]interface{})
+	if !ok {
+		return "", "", fmt.Errorf("%s is not a map[string]interface{}", c.CommonName)
+	}
+
+	cname, ok = certData["cname_validation_p1"].(string)
+	if !ok {
+		return "", "", fmt.Errorf("cname_validation_p1 is not a string")
+	}
+
+	content, ok = certData["cname_validation_p2"].(string)
+	if !ok {
+		return "", "", fmt.Errorf("cname_validation_p2 is not a string")
+	}
+
+	return cname, content, nil
+}
+
 func (c *Certificate) GetFileValidationContent() ([]string, error) {
 	otherMethods, ok := c.Validation.OtherMethods[c.CommonName].(map[string]interface{})
 	if !ok {
