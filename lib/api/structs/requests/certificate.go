@@ -10,3 +10,7 @@ type VerifyDomainStructure struct {
 	ValidationMethod  string `json:"validation_method"`
 	VerificationEmail string `json:"verification_email"`
 }
+
+type RevokeCertificateStructure struct {
+	Reason string `json:"reason"`
+}
