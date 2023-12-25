@@ -4,6 +4,7 @@ Copyright © 2024 Federico Juretich <fedejuret@gmail.com>
 package certificates
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"net/url"
@@ -32,12 +33,21 @@ var createCmd = &cobra.Command{
 
 		commonName, _ := utils.GetStringPromt("Which domain do you want to create a certificate for?")
 
+		if _, err := os.Stat("/" + commonName); errors.Is(err, os.ErrNotExist) {
+			err := os.Mkdir(commonName, 0777)
+
+			if err != nil {
+				fmt.Println("Error when try to create " + commonName + " folder: " + err.Error())
+				return
+			}
+		}
+
 		csrPromt := promptui.Select{
-			Label:  color.CyanString("Do you want to complete the CSR data by yourself?"),
+			Label:  color.CyanString("CSR and contact?"),
 			Stdout: &utils.BellSkipper{},
 			Items: []string{
-				"Yes",
-				"No, complete automatically",
+				"Autogenerate",
+				"Complete manually",
 			},
 		}
 
@@ -49,7 +59,7 @@ var createCmd = &cobra.Command{
 
 		var csrGenerateStruct csr.Generate
 
-		if csrPromtResponse == 0 {
+		if csrPromtResponse == 1 {
 			organization, _ := utils.GetStringPromt("Organization: ")
 			organizationUnit, _ := utils.GetStringPromt("Organization unit: ")
 			country, _ := utils.GetStringPromt("Country in two digits. Example: [AR]: ")
