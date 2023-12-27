@@ -1,11 +1,10 @@
 #!/usr/bin/env bash
 
 package="github.com/fedejuret/zerossl-cli"
-
 package_split=(${package//\// })
 package_name=${package_split[-1]}
 
-platforms=("linux/amd64" "linux/386" "linux/arm" "windows/amd64" "windows/386" "darwin/amd64")
+platforms=("linux/amd64" "windows/amd64" "windows/386")
 
 # Manejar la señal de interrupción (SIGINT)
 trap 'cleanup' INT
@@ -25,8 +24,16 @@ do
     GOOS=${platform_split[0]}
     GOARCH=${platform_split[1]}
     output_name=$package_name
+    env_commands=""
     if [ $GOOS = "windows" ]; then
         output_name+='.exe'
+        if [ $GOARCH = "386" ]; then
+            env_commands=CC=i686-w64-mingw32-gcc
+        fi;
+
+        if [ $GOARCH = "amd64" ]; then
+            env_commands=CC=x86_64-w64-mingw32-gcc
+        fi;
     fi
 
     echo "Running for $GOOS $GOARCH ..."
@@ -44,7 +51,7 @@ do
     spinner_pid=$!
 
     # Construir el binario para la plataforma actual
-    env GOOS=$GOOS GOARCH=$GOARCH go build -o bin/$GOOS/$GOARCH/$output_name $package
+    env $env_commands CGO_ENABLED=1 GOOS=$GOOS GOARCH=$GOARCH go build -o bin/$GOOS/$GOARCH/$output_name $package
     build_status=$?
 
     # Detener el spinner
