@@ -65,4 +65,7 @@ do
     fi
 
     echo "Build completed for $GOOS $GOARCH"
+    echo "Packaging file to .zip...";
+
+    zip -r bin/$GOOS/$GOARCH/$output_name.zip bin/$GOOS/$GOARCH/$output_name
 done
