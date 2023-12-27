@@ -39,5 +39,10 @@ func main() {
 	fmt.Println()
 	fmt.Println()
 
+	if len(os.Getenv("ZEROSSL_API_KEY")) == 0 {
+		fmt.Println(color.RedString("Environment variable ZEROSSL_API_KEY not found in your OS"))
+		return
+	}
+
 	cmd.Execute()
 }
