@@ -3,8 +3,8 @@ package certificate_service
 import (
 	"log"
 
-	"github.com/fedejuret/zerossl-golang-cli/lib/database"
-	"github.com/fedejuret/zerossl-golang-cli/lib/models"
+	"github.com/fedejuret/zerossl-cli/lib/database"
+	"github.com/fedejuret/zerossl-cli/lib/models"
 )
 
 func Store(certificate models.Certificate, validationMethod int8) {

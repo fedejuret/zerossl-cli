@@ -9,9 +9,9 @@ import (
 	"time"
 
 	"github.com/fatih/color"
-	"github.com/fedejuret/zerossl-golang-cli/lib/api"
-	"github.com/fedejuret/zerossl-golang-cli/lib/api/structs/responses"
-	"github.com/fedejuret/zerossl-golang-cli/lib/utils"
+	"github.com/fedejuret/zerossl-cli/lib/api"
+	"github.com/fedejuret/zerossl-cli/lib/api/structs/responses"
+	"github.com/fedejuret/zerossl-cli/lib/utils"
 	"github.com/rodaine/table"
 	"github.com/spf13/cobra"
 )

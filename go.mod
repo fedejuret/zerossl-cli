@@ -1,4 +1,4 @@
-module github.com/fedejuret/zerossl-golang-cli
+module github.com/fedejuret/zerossl-cli
 
 go 1.21.5
 

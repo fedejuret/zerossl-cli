@@ -11,8 +11,8 @@ import (
 
 	"github.com/Delta456/box-cli-maker/v2"
 	"github.com/fatih/color"
-	"github.com/fedejuret/zerossl-golang-cli/lib/api"
-	"github.com/fedejuret/zerossl-golang-cli/lib/utils"
+	"github.com/fedejuret/zerossl-cli/lib/api"
+	"github.com/fedejuret/zerossl-cli/lib/utils"
 	"github.com/spf13/cobra"
 )
 

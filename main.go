@@ -11,9 +11,9 @@ import (
 
 	"github.com/common-nighthawk/go-figure"
 	"github.com/fatih/color"
-	"github.com/fedejuret/zerossl-golang-cli/cmd"
-	_ "github.com/fedejuret/zerossl-golang-cli/cmd/modules/certificates"
-	"github.com/fedejuret/zerossl-golang-cli/lib/database"
+	"github.com/fedejuret/zerossl-cli/cmd"
+	_ "github.com/fedejuret/zerossl-cli/cmd/modules/certificates"
+	"github.com/fedejuret/zerossl-cli/lib/database"
 )
 
 var ProjectFolder string = os.Getenv("HOME") + "/.zerossl-cli/"

@@ -10,11 +10,11 @@ import (
 	"reflect"
 
 	"github.com/fatih/color"
-	"github.com/fedejuret/zerossl-golang-cli/lib/api"
-	"github.com/fedejuret/zerossl-golang-cli/lib/api/structs/requests"
-	"github.com/fedejuret/zerossl-golang-cli/lib/models"
-	certificate_service "github.com/fedejuret/zerossl-golang-cli/lib/services"
-	"github.com/fedejuret/zerossl-golang-cli/lib/utils"
+	"github.com/fedejuret/zerossl-cli/lib/api"
+	"github.com/fedejuret/zerossl-cli/lib/api/structs/requests"
+	"github.com/fedejuret/zerossl-cli/lib/models"
+	certificate_service "github.com/fedejuret/zerossl-cli/lib/services"
+	"github.com/fedejuret/zerossl-cli/lib/utils"
 	"github.com/spf13/cobra"
 )
 

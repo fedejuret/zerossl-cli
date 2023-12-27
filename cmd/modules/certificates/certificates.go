@@ -4,7 +4,7 @@ Copyright © 2024 Federico Juretich <fedejuret@gmail.com>
 package certificates
 
 import (
-	mainCmd "github.com/fedejuret/zerossl-golang-cli/cmd"
+	mainCmd "github.com/fedejuret/zerossl-cli/cmd"
 	"github.com/spf13/cobra"
 )
 
